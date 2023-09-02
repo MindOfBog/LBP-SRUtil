@@ -8,7 +8,7 @@ It includes a game file mod that establishes a UDP server within LBP1, enabling 
 Additionally, LBP-SRUtil includes a built-in eboot elf patcher for PS3 and an `imported_patch.yml` file for RPCS3.
 
 
-## Warning: Risks Associated with the Mod
+## Warning: Risks associated with the mod
 
 To enable this mod's functionality, the eboot patch grants unrestricted memory access and the ability to call any eboot functions from any script. While the mod itself is not malicious, there are risks associated with using script mods from untrustworthy sources or when in a P2P game party where someone might try to run a script.
 
@@ -54,7 +54,7 @@ RPCS3:
 ## Usage
 - Launch LBP1, once in game press start and enter the settings menu, a new settings page should be present at the top, if the installation was done correctly. **"SRUtil Settings"**
 - Under those settings you can configure the UDP server as well as turn it on and off.
-- In the LBP-SRUtil app go over to the settings tab and make sure the server settings match with the in game configuration. 
+- In the LBP-SRUtil app go over to the settings tab and make sure the port matches with the in game configuration. 
 - Press the start button in the app, at the bottom it will show if its running or not.
 - If it says "Running Active" the connection is established.
 - Go back to the Input viewer tab and select a controller skin for the desired player, and start the viewer.
