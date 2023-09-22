@@ -1,7 +1,6 @@
 package bog.lbpsru.components;
 
-import bog.lbpsru.Main;
-import bog.lbpsru.components.utils.Buttons;
+import bog.lbpsru.components.utils.Button;
 import bog.lbpsru.components.utils.Utils;
 
 import javax.imageio.ImageIO;
@@ -9,11 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
 import java.io.*;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,41 +40,41 @@ public class SkinRenderer {
 
                 drawPart(g, skin.base);
 
-                if(player.isButtonPressed(Buttons.cross))
+                if(player.isButtonPressed(Button.cross))
                     drawPart(g, skin.cross);
-                if(player.isButtonPressed(Buttons.square))
+                if(player.isButtonPressed(Button.square))
                     drawPart(g, skin.square);
-                if(player.isButtonPressed(Buttons.triangle))
+                if(player.isButtonPressed(Button.triangle))
                     drawPart(g, skin.triangle);
-                if(player.isButtonPressed(Buttons.circle))
+                if(player.isButtonPressed(Button.circle))
                     drawPart(g, skin.circle);
-                if(player.isButtonPressed(Buttons.l1))
+                if(player.isButtonPressed(Button.l1))
                     drawPart(g, skin.l1);
-                if(player.isButtonPressed(Buttons.l2))
+                if(player.isButtonPressed(Button.l2))
                     drawPart(g, skin.l2);
-                if(player.isButtonPressed(Buttons.r1))
+                if(player.isButtonPressed(Button.r1))
                     drawPart(g, skin.r1);
-                if(player.isButtonPressed(Buttons.r2))
+                if(player.isButtonPressed(Button.r2))
                     drawPart(g, skin.r2);
-                if(player.isButtonPressed(Buttons.up))
+                if(player.isButtonPressed(Button.up))
                     drawPart(g, skin.dpadUp);
-                if(player.isButtonPressed(Buttons.left))
+                if(player.isButtonPressed(Button.left))
                     drawPart(g, skin.dpadLeft);
-                if(player.isButtonPressed(Buttons.down))
+                if(player.isButtonPressed(Button.down))
                     drawPart(g, skin.dpadDown);
-                if(player.isButtonPressed(Buttons.right))
+                if(player.isButtonPressed(Button.right))
                     drawPart(g, skin.dpadRight);
-                if(player.isButtonPressed(Buttons.select))
+                if(player.isButtonPressed(Button.select))
                     drawPart(g, skin.select);
-                if(player.isButtonPressed(Buttons.start))
+                if(player.isButtonPressed(Button.start))
                     drawPart(g, skin.start);
 
-                if(player.isButtonPressed(Buttons.l3))
+                if(player.isButtonPressed(Button.l3))
                     drawPart(g, skin.l3, (int) (skin.analogPitch * player.getLeftStick()[0]), (int) (skin.analogPitch * -player.getLeftStick()[1]));
                 else
                     drawPart(g, skin.l3Press, (int) (skin.analogPitch * player.getLeftStick()[0]), (int) (skin.analogPitch * -player.getLeftStick()[1]));
 
-                if(player.isButtonPressed(Buttons.r3))
+                if(player.isButtonPressed(Button.r3))
                     drawPart(g, skin.r3, (int) (skin.analogPitch * player.getRightStick()[0]), (int) (skin.analogPitch * -player.getRightStick()[1]));
                 else
                     drawPart(g, skin.r3Press, (int) (skin.analogPitch * player.getRightStick()[0]), (int) (skin.analogPitch * -player.getRightStick()[1]));

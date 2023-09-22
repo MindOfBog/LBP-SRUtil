@@ -9,17 +9,11 @@ import bog.lbpsru.components.utils.Patch;
 import bog.lbpsru.components.utils.Utils;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.text.DefaultFormatter;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -29,13 +23,10 @@ import java.util.Objects;
 public class LBPSRUtil {
     public JPanel mainForm;
     private JTabbedPane tabbedPane1;
-    private JTextField UDPListenerIP;
     private JTextField UDPListenerPort;
-    private JButton setListenerIP;
     private JButton setListenerPort;
     private JButton startUDPListener;
     private JButton stopUDPListener;
-    private JLabel listenerIPLabel;
     private JLabel listenerPortLabel;
     private JLabel listenerRunning;
     public JComboBox<String> player1Combo;
@@ -51,17 +42,23 @@ public class LBPSRUtil {
     private JLabel listenerActivity;
     private JButton patchELFFileButton;
     private JCheckBox legacyFileDialogueCheckBox;
+    private JLabel serverIPLabel;
+    private JLabel serverPortLabel;
+    private JLabel serverRunning;
+    private JTextField UDPServerIP;
+    private JTextField UDPServerPort;
+    private JButton setServerIP;
+    private JButton setServerPort;
+    private JButton startUDPServer;
+    private JButton stopUDPServer;
+    private JRadioButton a121RadioButton;
+    private JRadioButton a130RadioButton;
 
     public void init(ControllerListener listener, TasServer server)
     {
-        setListenerIP.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String ip = UDPListenerIP.getText();
-                if(Utils.validateIP(ip, mainForm))
-                    listener.setIp(ip);
-            }
-        });
+        ButtonGroup patches = new ButtonGroup();
+        patches.add(a121RadioButton);
+        patches.add(a130RadioButton);
         setListenerPort.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -81,6 +78,27 @@ public class LBPSRUtil {
             @Override
             public void actionPerformed(ActionEvent e) {
                 listener.stopListener();
+            }
+        });
+        setServerIP.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String ip = UDPServerIP.getText();
+                boolean valid = Utils.validateIP(ip, mainForm);
+                if(valid)
+                    server.setIp(ip);
+            }
+        });
+        startUDPServer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                server.startServer();
+            }
+        });
+        stopUDPServer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                server.stopServer();
             }
         });
         refreshSkinsButton.addActionListener(new ActionListener() {
@@ -117,6 +135,8 @@ public class LBPSRUtil {
                         player3Combo.addItem(skin.name);
                         player4Combo.addItem(skin.name);
                     }
+
+                    Main.mainFrame.pack();
                 } catch (Exception ex) {ex.printStackTrace();}
             }
         });
@@ -165,11 +185,30 @@ public class LBPSRUtil {
             public void actionPerformed(ActionEvent e) {
                 try
                 {
+                    boolean a130 = a130RadioButton.isSelected();
+                    boolean a121 = a121RadioButton.isSelected();
+
+                    if(!a130 && !a121)
+                    {
+                        return;
+                    }
+
                     File elf = legacyFileDialogueCheckBox.isSelected() ? Utils.openFileLegacy("elf") : Utils.openFile("elf");
                     byte[] outData = Files.readAllBytes(Path.of(elf.getPath()));
-                    Patch.applyPatches(outData, Patch.ebootPatch());
-                    Files.write(Path.of(elf.getPath() + ".patched"), outData);
-                    JOptionPane.showMessageDialog(mainForm, "Patched file: " + elf.getPath() + ".patched", "Done!", JOptionPane.PLAIN_MESSAGE);
+
+                    if(a130)
+                    {
+                        Patch.applyPatches(outData, Patch.patch130());
+                        Files.write(Path.of(elf.getPath() + ".patched"), outData);
+                        JOptionPane.showMessageDialog(mainForm, "Applied 1.30 patches. Patched file: " + elf.getPath() + ".patched", "Done!", JOptionPane.PLAIN_MESSAGE);
+                    }
+                    else if(a121)
+                    {
+                        Patch.applyPatches(outData, Patch.patch121());
+                        Files.write(Path.of(elf.getPath() + ".patched"), outData);
+                        JOptionPane.showMessageDialog(mainForm, "Applied 1.21 patches. Patched file: " + elf.getPath() + ".patched", "Done!", JOptionPane.PLAIN_MESSAGE);
+                    }
+
                 }catch (Exception ex){ex.printStackTrace();}
             }
         });
@@ -199,11 +238,16 @@ public class LBPSRUtil {
 
     public void statKeeper(ControllerListener listener, TasServer server)
     {
-        listenerIPLabel.setText(listener.getIp());
         listenerPortLabel.setText(Integer.toString(listener.getPort()));
         listenerRunning.setText(listener.isStopped() ? "Stopped" : "Running");
-        playerCount.setText(Integer.toString(listener.playerCount));
         listenerActivity.setText(listener.isStopped() ? "Inactive" : listener.isReceivingData() ? "Active" : "Waiting");
+
+        playerCount.setText(Integer.toString(listener.playerCount));
+
+        serverIPLabel.setText(server.getIp());
+        serverPortLabel.setText(Integer.toString(server.getPort()));
+        serverRunning.setText(server.isStopped() ? "Stopped" : "Running");
+        Main.mainFrame.pack();
     }
 
     private void createUIComponents() {

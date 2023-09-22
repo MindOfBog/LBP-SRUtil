@@ -27,9 +27,16 @@ import static org.lwjgl.system.MemoryStack.stackPush;
  */
 public class Utils {
 
-    public static int getIntBitsFromBuffer(byte[] buffer, int index)
+    public static int getIntFromBuffer(byte[] buffer, int index)
     {
         return (buffer[index * 4] & 0xFF) << 24 | (buffer[index * 4 + 1] & 0xFF) << 16 | (buffer[index * 4 + 2] & 0xFF) << 8 | (buffer[index * 4 + 3] & 0xFF) << 0;
+    }
+
+    public static void putIntIntoBuffer(int value, byte[] buffer, int index) {
+        buffer[index * 4] = (byte) (value >> 24);
+        buffer[index * 4 + 1] = (byte) (value >> 16);
+        buffer[index * 4 + 2] = (byte) (value >> 8);
+        buffer[index * 4 + 3] = (byte) value;
     }
 
     public static List<String> getFilenames(String directoryName) throws URISyntaxException, UnsupportedEncodingException, IOException {
@@ -101,9 +108,7 @@ public class Utils {
                         JOptionPane.showMessageDialog(form, "Component in IP can't be greater than 255.\n\"" + b + "\"", "ERROR!", JOptionPane.ERROR_MESSAGE);
                     }
                 }
-
-                if(passed)
-                    return true;
+                return passed;
             }catch (Exception ex)
             {
                 if(ex instanceof NumberFormatException)
