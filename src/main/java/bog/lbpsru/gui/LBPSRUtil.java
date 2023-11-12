@@ -357,8 +357,11 @@ public class LBPSRUtil {
 
             Main.skins = new ArrayList<>();
 
-            for(File file : Objects.requireNonNull(controllerskins.listFiles()))
-                Main.skins.add(SkinRenderer.readSkin(file.getPath(), file.getName()));
+            if(controllerskins.listFiles() == null)
+                System.err.println("Missing controller skins!");
+            else
+                for(File file : controllerskins.listFiles())
+                    Main.skins.add(SkinRenderer.readSkin(file.getPath(), file.getName()));
 
             for(Skin skin : Main.skins)
             {
