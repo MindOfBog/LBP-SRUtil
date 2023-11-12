@@ -1,4 +1,4 @@
-package bog.lbpsru.components;
+package bog.lbpsru.components.structs;
 
 /**
  * @author Bog

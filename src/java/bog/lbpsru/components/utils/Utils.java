@@ -129,7 +129,6 @@ public class Utils {
 
     public static int validatePort(String port, JPanel form)
     {
-
         if(!port.contains("."))
         {
             try
@@ -202,6 +201,14 @@ public class Utils {
         fileChooser.setAcceptAllFileFilterUsed(true);
         return true;
     }
+    private static boolean setupFilter(String name, String extension) {
+        fileChooser.resetChoosableFileFilters();
+        fileChooser.setSelectedFile(new File(name));
+        fileChooser.setCurrentDirectory(new File(Paths.get(System.getProperty("user.home"), "Documents", name).toAbsolutePath().toString()));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("*." + extension, extension));
+        fileChooser.setAcceptAllFileFilterUsed(true);
+        return true;
+    }
 
     public static File openFileLegacy(String extension) {
         int returnValue = JFileChooser.CANCEL_OPTION;
@@ -210,5 +217,31 @@ public class Utils {
         if (returnValue == JFileChooser.APPROVE_OPTION)
             return fileChooser.getSelectedFile();
         return null;
+    }
+
+    public static File saveFileLegacy(String name, String extension) {
+        int returnValue = JFileChooser.CANCEL_OPTION;
+        setupFilter(name, extension);
+        returnValue = fileChooser.showSaveDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION)
+            return fileChooser.getSelectedFile();
+        return null;
+    }
+
+    public static File saveFile(String name, String extension)
+    {
+        try (MemoryStack stack = stackPush()) {
+            PointerBuffer pattern = null;
+            pattern = stack.mallocPointer(1);
+            pattern.put(stack.UTF8("*." + extension));
+            pattern.flip();
+
+            return new File(TinyFileDialogs.tinyfd_openFileDialog(
+                    "Open File",
+                    Paths.get(System.getProperty("user.home"), "Documents", name).toAbsolutePath().toString(),
+                    pattern,
+                    null,
+                    false));
+        }
     }
 }

@@ -1,17 +1,24 @@
 package bog.lbpsru.gui;
 
 import bog.lbpsru.Main;
-import bog.lbpsru.components.ControllerListener;
-import bog.lbpsru.components.Skin;
+import bog.lbpsru.components.Listener;
+import bog.lbpsru.components.structs.Skin;
 import bog.lbpsru.components.SkinRenderer;
-import bog.lbpsru.components.TasServer;
+import bog.lbpsru.components.Server;
+import bog.lbpsru.components.structs.tas.Replay;
 import bog.lbpsru.components.utils.Patch;
 import bog.lbpsru.components.utils.Utils;
+import bog.lbpsru.server.SRUtilListener;
+import bog.lbpsru.server.SRUtilServer;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -53,8 +60,23 @@ public class LBPSRUtil {
     private JButton stopUDPServer;
     private JRadioButton a121RadioButton;
     private JRadioButton a130RadioButton;
+    private JButton LOADREPLAYButton;
+    private JLabel loadedReplayLabel;
+    private JButton clearButton;
+    private JButton recordReplayButton;
+    private JButton playReplayButton;
+    private JButton newReplayButton;
+    private JButton exportReplayButton;
+    private JLabel currentFrame;
+    private JPanel tasButtonsPanel;
+    public static Replay loadedReplay;
+    public static boolean recording;
+    public static boolean running;
+    public static boolean endRun;
+    public static boolean readyForInputPacket;
 
-    public void init(ControllerListener listener, TasServer server)
+
+    public void init(SRUtilListener listener, SRUtilServer server)
     {
         ButtonGroup patches = new ButtonGroup();
         patches.add(a121RadioButton);
@@ -213,6 +235,118 @@ public class LBPSRUtil {
             }
         });
 
+        LOADREPLAYButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try
+                {
+                    File json = legacyFileDialogueCheckBox.isSelected() ? Utils.openFileLegacy("json") : Utils.openFile("json");
+                    loadedReplay = Replay.fromJson(json, mainForm);
+                    loadedReplayLabel.setText(json.getName().substring(0, json.getName().lastIndexOf(".")));
+                    LOADREPLAYButton.setEnabled(false);
+                    clearButton.setEnabled(true);
+                    playReplayButton.setEnabled(true);
+                    newReplayButton.setEnabled(false);
+                    recordReplayButton.setEnabled(false);
+                    exportReplayButton.setEnabled(true);
+                }catch (Exception ex){ex.printStackTrace();}
+            }
+        });
+
+        clearButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadedReplay = null;
+                loadedReplayLabel.setText("No file loaded.");
+                LOADREPLAYButton.setEnabled(true);
+                clearButton.setEnabled(false);
+                playReplayButton.setEnabled(false);
+                newReplayButton.setEnabled(true);
+                recordReplayButton.setEnabled(false);
+                exportReplayButton.setEnabled(false);
+            }
+        });
+
+        newReplayButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = JOptionPane.showInputDialog("Replay name:");
+                loadedReplay = new Replay();
+                loadedReplayLabel.setText(name);
+                LOADREPLAYButton.setEnabled(false);
+                clearButton.setEnabled(true);
+                playReplayButton.setEnabled(false);
+                newReplayButton.setEnabled(false);
+                recordReplayButton.setEnabled(true);
+            }
+        });
+
+        recordReplayButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if(recording)
+                {
+                    recordReplayButton.setText("Record");
+                    recording = false;
+                    recordReplayButton.setEnabled(false);
+                    playReplayButton.setEnabled(true);
+                    exportReplayButton.setEnabled(true);
+                }
+                else
+                {
+                    recordReplayButton.setText("Stop Recording");
+                    recording = true;
+                }
+
+            }
+        });
+
+        exportReplayButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                File out = legacyFileDialogueCheckBox.isSelected() ? Utils.saveFileLegacy(loadedReplayLabel.getText() + ".json", "json") : Utils.saveFile(loadedReplayLabel.getText() + ".json", "json");
+
+                try (Writer writer = Files.newBufferedWriter(Path.of(out.getPath()), StandardCharsets.UTF_8)) {
+
+                    Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+                    gson.toJson(loadedReplay.toJson(), writer);
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        playReplayButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if(running)
+                {
+                    running = false;
+                    endRun = true;
+                    readyForInputPacket = false;
+                    playReplayButton.setText("Play");
+                }
+                else
+                {
+//                    server.lastIndexPlayer1 = new int[2];
+//                    server.lastIndexPlayer2 = new int[2];
+//                    server.lastIndexPlayer3 = new int[2];
+//                    server.lastIndexPlayer4 = new int[2];
+
+                    Main.currentSegment = 0;
+                    Main.lastIndex = 0;
+
+                    running = true;
+                    readyForInputPacket = true;
+                    playReplayButton.setText("Stop");
+                }
+
+            }
+        });
+
         try {
             String path = Main.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
             if(path.startsWith("/"))
@@ -236,7 +370,7 @@ public class LBPSRUtil {
         } catch (Exception e) {e.printStackTrace();}
     }
 
-    public void statKeeper(ControllerListener listener, TasServer server)
+    public void statKeeper(SRUtilListener listener, Server server)
     {
         listenerPortLabel.setText(Integer.toString(listener.getPort()));
         listenerRunning.setText(listener.isStopped() ? "Stopped" : "Running");

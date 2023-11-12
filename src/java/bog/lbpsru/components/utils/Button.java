@@ -40,4 +40,12 @@ public enum Button {
                 return enumFlag;
         throw new IllegalArgumentException("No button with flag \"" + flag + "\".");
     }
+
+    public static int fromName(String name)
+    {
+        for (Button button : Button.values())
+            if(name.equalsIgnoreCase(button.name()))
+                return button.getFlag();
+        return -1;
+    }
 }

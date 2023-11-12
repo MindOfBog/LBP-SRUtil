@@ -1,7 +1,8 @@
 package bog.lbpsru.components;
 
-import bog.lbpsru.components.utils.Button;
+import bog.lbpsru.components.structs.PlayerInputs;
 import bog.lbpsru.components.utils.Utils;
+import bog.lbpsru.gui.LBPSRUtil;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,7 +12,7 @@ import java.net.InetAddress;
 /**
  * @author Bog
  */
-public class TasServer {
+public abstract class Server {
 
     private InetAddress ipaddress;
     private String ip;
@@ -19,25 +20,9 @@ public class TasServer {
     private Thread thread;
     private boolean running;
     private DatagramSocket socket;
-    private DatagramPacket packet;
-    byte[] buffer = new byte[1024];
+    private byte[] buffer = new byte[1024];
 
-    public boolean fakeInputsActive = false;
-
-    public PlayerInputs Player1 = new PlayerInputs();
-    public boolean player1Active = false;
-
-    public PlayerInputs Player2 = new PlayerInputs();
-    public boolean player2Active = false;
-
-    public PlayerInputs Player3 = new PlayerInputs();
-    public boolean player3Active = false;
-
-    public PlayerInputs Player4 = new PlayerInputs();
-    public boolean player4Active = false;
-
-
-    public TasServer(String ip, int port)
+    public Server(String ip, int port)
     {
         try {
             this.ip = ip;
@@ -85,25 +70,7 @@ public class TasServer {
         return port;
     }
 
-    private void update() throws IOException
-    {
-
-        Utils.putIntIntoBuffer(fakeInputsActive ? 1 : 0, buffer, 0);
-
-        Utils.putIntIntoBuffer(player1Active ? 1 : 0, buffer, 1);
-        Player1.putPlayerInputsIntoBuffer(buffer, 2);
-
-        Utils.putIntIntoBuffer(player2Active ? 1 : 0, buffer, 1 + 6);
-        Player2.putPlayerInputsIntoBuffer(buffer, 2 + 6);
-
-        Utils.putIntIntoBuffer(player3Active ? 1 : 0, buffer, 1 + 6 * 2);
-        Player3.putPlayerInputsIntoBuffer(buffer, 2 + 6 * 2);
-
-        Utils.putIntIntoBuffer(player4Active ? 1 : 0, buffer, 1 + 6 * 3);
-        Player4.putPlayerInputsIntoBuffer(buffer, 2 + 6 * 3);
-
-        socket.send(packet);
-    }
+    public abstract boolean update(byte[] buffer);
 
     public void startServer()
     {
@@ -116,7 +83,9 @@ public class TasServer {
                         if(socket.isClosed())
                             stopServer();
 
-                        update();
+                        buffer = new byte[1024];
+                        if(update(buffer))
+                            socket.send(new DatagramPacket(buffer, buffer.length, ipaddress, port));
                     }
                 } catch(Exception v) {
                     v.printStackTrace();
@@ -130,7 +99,6 @@ public class TasServer {
                 socket.close();
 
             socket = new DatagramSocket();
-            packet = new DatagramPacket(buffer, buffer.length, this.ipaddress, this.port);
 
             running = true;
             thread.start();
@@ -145,12 +113,12 @@ public class TasServer {
     {
         if(running)
         {
-            try
-            {
-                Utils.putIntIntoBuffer(0, buffer, 0);
-
-                socket.send(packet);
-            }catch (Exception e){e.printStackTrace();}
+//            try
+//            {
+//                Utils.putIntIntoBuffer(0, buffer, 0);
+//
+//                socket.send(packet);
+//            }catch (Exception e){e.printStackTrace();}
 
             running = false;
             socket.close();

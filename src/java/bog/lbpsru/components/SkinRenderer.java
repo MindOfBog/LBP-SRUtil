@@ -1,5 +1,7 @@
 package bog.lbpsru.components;
 
+import bog.lbpsru.components.structs.PlayerInputs;
+import bog.lbpsru.components.structs.Skin;
 import bog.lbpsru.components.utils.Button;
 import bog.lbpsru.components.utils.Utils;
 
