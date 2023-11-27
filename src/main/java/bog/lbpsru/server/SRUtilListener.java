@@ -28,11 +28,6 @@ public class SRUtilListener extends Listener {
 
     public PlayerInputs Player4 = new PlayerInputs();
 
-    private ArrayList<TasInput> p1 = new ArrayList<>();
-    private ArrayList<TasInput> p2 = new ArrayList<>();
-    private ArrayList<TasInput> p3 = new ArrayList<>();
-    private ArrayList<TasInput> p4 = new ArrayList<>();
-
     public SRUtilListener(int port) {
         super(port);
     }
@@ -78,17 +73,28 @@ public class SRUtilListener extends Listener {
                             Float.intBitsToFloat(Utils.getIntFromBuffer(data, 25)),
                             Float.intBitsToFloat(Utils.getIntFromBuffer(data, 26)));
 
-                if(LBPSRUtil.recording)
-                {
-                    p1.add(new TasInput(frame, Utils.getIntFromBuffer(data, 3) == 1, Player1.clone()));
-                    p2.add(new TasInput(frame, Utils.getIntFromBuffer(data, 9) == 1, Player2.clone()));
-                    p3.add(new TasInput(frame, Utils.getIntFromBuffer(data, 15) == 1, Player3.clone()));
-                    p4.add(new TasInput(frame, Utils.getIntFromBuffer(data, 21) == 1, Player4.clone()));
-                }
-
                 break;
             case 2: // level start
-                Main.currentSegment++;
+
+                if(LBPSRUtil.running)
+                {
+                    Main.currentSegment++;
+                    Main.lastIndex = 0;
+
+                    if(Main.currentSegment > LBPSRUtil.loadedReplay.player1.size() &&
+                            Main.currentSegment > LBPSRUtil.loadedReplay.player2.size() &&
+                            Main.currentSegment > LBPSRUtil.loadedReplay.player3.size() &&
+                            Main.currentSegment > LBPSRUtil.loadedReplay.player4.size())
+                    {
+                        LBPSRUtil.running = false;
+                        LBPSRUtil.endRun = true;
+                        LBPSRUtil.readyForInputPacket = false;
+                        Main.lbpsrUtil.playReplayButton.setText("Play");
+                    }
+
+                    LBPSRUtil.readyForInputPacket = true;
+                    System.out.println(Main.currentSegment);
+                }
 
                 int currentLevel = Utils.getIntFromBuffer(data, 1);
                 int lastLevel = Utils.getIntFromBuffer(data, 2);
@@ -96,6 +102,9 @@ public class SRUtilListener extends Listener {
                 break;
             case 3: // inputs received
                 LBPSRUtil.readyForInputPacket = true;
+                break;
+            case 4: // level finished
+
                 break;
         }
     }

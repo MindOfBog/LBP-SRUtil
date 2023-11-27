@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -236,12 +237,33 @@ public class Utils {
             pattern.put(stack.UTF8("*." + extension));
             pattern.flip();
 
-            return new File(TinyFileDialogs.tinyfd_openFileDialog(
-                    "Open File",
+            return new File(TinyFileDialogs.tinyfd_saveFileDialog(
+                    "Save File",
                     Paths.get(System.getProperty("user.home"), "Documents", name).toAbsolutePath().toString(),
                     pattern,
-                    null,
-                    false));
+                    null));
         }
+    }
+
+    public static float round(float value, int decimals)
+    {
+        String dec = "###.#";
+        for(int i = 1; i < decimals; i++)
+            dec += "#";
+
+        DecimalFormat df = new DecimalFormat(dec);
+
+        return Float.parseFloat(df.format(value));
+    }
+
+    public static double round(double value, int decimals)
+    {
+        String dec = "###.#";
+        for(int i = 1; i < decimals; i++)
+            dec += "#";
+
+        DecimalFormat df = new DecimalFormat(dec);
+
+        return Double.parseDouble(df.format(value));
     }
 }

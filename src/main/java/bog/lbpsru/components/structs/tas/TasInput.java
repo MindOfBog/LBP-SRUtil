@@ -2,6 +2,7 @@ package bog.lbpsru.components.structs.tas;
 
 import bog.lbpsru.components.structs.PlayerInputs;
 import bog.lbpsru.components.utils.Button;
+import bog.lbpsru.components.utils.Utils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -36,7 +37,8 @@ public class TasInput{
         input.frame = this.frame;
         input.controller = this.controller;
         input.wait = this.wait;
-        input.inputs = this.inputs.clone();
+        if(input.inputs != null)
+            input.inputs = this.inputs.clone();
         return input;
     }
 
@@ -84,5 +86,23 @@ public class TasInput{
             json.addProperty("wait", wait);
 
         return json;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof TasInput)
+        {
+            TasInput compare = (TasInput) obj;
+            if(this.controller == compare.controller &&
+                    this.wait == compare.wait &&
+                    this.inputs.getButtons() == compare.inputs.getButtons() &&
+                    Utils.round(this.inputs.getLeftStick()[0], 3) == Utils.round(compare.inputs.getLeftStick()[0], 3) &&
+                    Utils.round(this.inputs.getLeftStick()[1], 3) == Utils.round(compare.inputs.getLeftStick()[1], 3) &&
+                    Utils.round(this.inputs.getRightStick()[0], 3) == Utils.round(compare.inputs.getRightStick()[0], 3) &&
+                    Utils.round(this.inputs.getRightStick()[1], 3) == Utils.round(compare.inputs.getRightStick()[1], 3))
+                return true;
+        }
+
+        return false;
     }
 }

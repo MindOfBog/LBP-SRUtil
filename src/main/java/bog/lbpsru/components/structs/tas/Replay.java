@@ -206,4 +206,91 @@ public class Replay {
 
         return json;
     }
+
+    public static Replay fromTasInputs(ArrayList<TasInput> p1, ArrayList<TasInput> p2, ArrayList<TasInput> p3, ArrayList<TasInput> p4)
+    {
+        Replay replay = new Replay();
+
+        TasInput lastInput = new TasInput();
+
+        ArrayList<TasInput> inputs = new ArrayList<>();
+
+        if(p1 != null)
+            for (int i = 0; i < p1.size(); i++)
+            {
+                TasInput input = p1.get(i);
+
+                if(i == 0 || (i > 0 && !input.equals(p1.get(i - 1))))
+                {
+                    if(input.wait != null && input.wait.equalsIgnoreCase("level"))
+                    {
+                        replay.player1.add(inputs);
+                        inputs = new ArrayList<>();
+                    }
+                    else
+                        inputs.add(input);
+                }
+            }
+        replay.player1.add(inputs);
+        inputs = new ArrayList<>();
+
+        lastInput = new TasInput();
+
+        if(p2 != null)
+            for (int i = 0; i < p2.size(); i++)
+            {
+                TasInput input = p2.get(i);
+
+                if(i == 0 || (i > 0 && !input.equals(p2.get(i - 1))))
+                {
+                    if (input.wait != null && input.wait.equalsIgnoreCase("level")) {
+                        replay.player2.add(inputs);
+                        inputs = new ArrayList<>();
+                    } else
+                        inputs.add(input);
+                }
+            }
+        replay.player2.add(inputs);
+        inputs = new ArrayList<>();
+
+        lastInput = new TasInput();
+
+        if(p3 != null)
+            for (int i = 0; i < p3.size(); i++)
+            {
+                TasInput input = p3.get(i);
+
+                if(i == 0 || (i > 0 && !input.equals(p3.get(i - 1))))
+                {
+                    if (input.wait != null && input.wait.equalsIgnoreCase("level")) {
+                        replay.player3.add(inputs);
+                        inputs = new ArrayList<>();
+                    } else
+                        inputs.add(input);
+                }
+            }
+        replay.player3.add(inputs);
+        inputs = new ArrayList<>();
+
+        lastInput = new TasInput();
+
+        if(p4 != null)
+            for (int i = 0; i < p4.size(); i++)
+            {
+                TasInput input = p4.get(i);
+
+                if(i == 0 || (i > 0 && !input.equals(p4.get(i - 1))))
+                {
+                    if (input.wait != null && input.wait.equalsIgnoreCase("level")) {
+                        replay.player4.add(inputs);
+                        inputs = new ArrayList<>();
+                    } else
+                        inputs.add(input);
+                }
+            }
+        replay.player4.add(inputs);
+        inputs = new ArrayList<>();
+
+        return replay;
+    }
 }

@@ -99,54 +99,6 @@ public class PlayerInputs {
             if(jsonPlayerInputs.get(button.name()) != null)
                 inputs.setButtonPressed(button, jsonPlayerInputs.get(button.name()).getAsBoolean());
 
-//        if(jsonPlayerInputs.get("l2") != null)
-//            inputs.setButtonPressed(Button.l2, jsonPlayerInputs.get("l2").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("r2") != null)
-//            inputs.setButtonPressed(Button.r2, jsonPlayerInputs.get("r2").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("l1") != null)
-//            inputs.setButtonPressed(Button.l1, jsonPlayerInputs.get("l1").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("r1") != null)
-//            inputs.setButtonPressed(Button.r1, jsonPlayerInputs.get("r1").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("triangle") != null)
-//            inputs.setButtonPressed(Button.triangle, jsonPlayerInputs.get("triangle").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("circle") != null)
-//            inputs.setButtonPressed(Button.circle, jsonPlayerInputs.get("circle").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("cross") != null)
-//            inputs.setButtonPressed(Button.cross, jsonPlayerInputs.get("cross").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("square") != null)
-//            inputs.setButtonPressed(Button.square, jsonPlayerInputs.get("square").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("select") != null)
-//            inputs.setButtonPressed(Button.select, jsonPlayerInputs.get("select").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("l3") != null)
-//            inputs.setButtonPressed(Button.l3, jsonPlayerInputs.get("l3").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("r3") != null)
-//            inputs.setButtonPressed(Button.r3, jsonPlayerInputs.get("r3").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("start") != null)
-//            inputs.setButtonPressed(Button.start, jsonPlayerInputs.get("start").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("up") != null)
-//            inputs.setButtonPressed(Button.up, jsonPlayerInputs.get("up").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("right") != null)
-//            inputs.setButtonPressed(Button.right, jsonPlayerInputs.get("right").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("down") != null)
-//            inputs.setButtonPressed(Button.down, jsonPlayerInputs.get("down").getAsBoolean());
-//
-//        if(jsonPlayerInputs.get("left") != null)
-//            inputs.setButtonPressed(Button.left, jsonPlayerInputs.get("left").getAsBoolean());
-
         JsonElement lstick = jsonPlayerInputs.get("lstick");
         JsonElement rstick = jsonPlayerInputs.get("rstick");
 
@@ -205,5 +157,9 @@ public class PlayerInputs {
         json.add("rstick", rstick);
 
         return json;
+    }
+
+    public int getButtons() {
+        return buttons;
     }
 }
